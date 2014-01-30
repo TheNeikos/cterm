@@ -3,6 +3,7 @@
  gcc -Wall x.conn -lxcb
 */
 #include <xcb/xcb.h>
+#include <xcb/xcb_keysyms.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -10,7 +11,7 @@
 #include "event_handler.c"
  
 int close_window(xcb_generic_event_t*);
-int debug_keypress(xcb_generic_event_t*);
+int output_string(xcb_generic_event_t*);
 int done = 0;
 int main(void)
 {
@@ -22,8 +23,7 @@ int main(void)
   xcb_generic_event_t *event;
   uint32_t             mask;
   uint32_t             values[2];
-  xcb_rectangle_t      r = { 20, 20, 600, 60 };
- 
+  
                         /* open connection with the server */
   conn = xcb_connect(NULL,NULL);
   if (xcb_connection_has_error(conn)) {
@@ -58,9 +58,7 @@ int main(void)
  
   xcb_flush(conn);
 
-  cterm_add_event_listener(XCB_KEY_PRESS, debug_keypress);
-  cterm_add_event_listener(XCB_KEY_PRESS, debug_keypress);
-  cterm_add_event_listener(XCB_KEY_PRESS, debug_keypress);
+  cterm_add_event_listener(XCB_KEY_PRESS, output_string);
   cterm_add_event_listener(XCB_KEY_PRESS, close_window);
  
                         /* event loop */
@@ -80,7 +78,7 @@ int main(void)
 int close_window(xcb_generic_event_t* event)
 {
   xcb_button_press_event_t *bp = (xcb_button_press_event_t *)event;
-  if(bp->detail == KEYCODE_Q)
+  if(bp->detail == KEYCODE_ESC)
   {
     done = 1;
     return 1;
@@ -88,9 +86,11 @@ int close_window(xcb_generic_event_t* event)
   return 0;
 }
 
-int debug_keypress(xcb_generic_event_t* event)
+int output_string(xcb_generic_event_t* event)
 {
   xcb_button_press_event_t *bp = (xcb_button_press_event_t *)event;
-  printf("Keypress: %i\n", bp->detail);
+  static char* string;
+  xcb_key_symbols_t sym;
+  printf("%i %c\n", bp->detail,xcb_key_symbols_get_keycode(bp->detail,&sym, 0));
   return 0;
 }
