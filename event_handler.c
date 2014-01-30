@@ -39,7 +39,7 @@ cterm_event_listener_queue* get_event_queue(uint8_t type){
   static cterm_event_listener_queue* queues;
   if(queues == NULL)
   {
-    queues = (cterm_event_listener_queue*) calloc(25, sizeof(cterm_event_listener_queue));
+    queues = (cterm_event_listener_queue*) calloc(128, sizeof(cterm_event_listener_queue));
   }
-  return queues + (int) log2(type); //We are exploiting the fact that the list of events are multiples of 2;
+  return queues + type; //We are exploiting the fact that the list of events are multiples of 2;
 }
