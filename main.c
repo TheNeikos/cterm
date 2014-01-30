@@ -58,19 +58,21 @@ int main(void)
  
   xcb_flush(conn);
 
-  add_event_listener(XCB_KEY_PRESS, debug_keypress);
-  add_event_listener(XCB_KEY_PRESS, close_window);
+  cterm_add_event_listener(XCB_KEY_PRESS, debug_keypress);
+  cterm_add_event_listener(XCB_KEY_PRESS, debug_keypress);
+  cterm_add_event_listener(XCB_KEY_PRESS, debug_keypress);
+  cterm_add_event_listener(XCB_KEY_PRESS, close_window);
  
                         /* event loop */
   while (!done) {
     event = xcb_poll_for_event(conn);
     if(event == NULL) continue;
-    handle_event(event);
+    cterm_handle_event(event);
     free(event);
   }
                         /* close connection to server */
   xcb_disconnect(conn);
- 
+  cterm_free_event_handlers();
   return 0;
 }
 
