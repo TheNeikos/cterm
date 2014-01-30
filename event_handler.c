@@ -9,8 +9,6 @@ void handle_event(xcb_generic_event_t* event)
       return;
     if(queue->event_listener->listener(event))
       return; // On non nul we exit
-    if(queue->next == NULL)
-      return;
   }
 }
 
